@@ -21,6 +21,7 @@ class VW:
                  l2=None,
                  learning_rate=None,
                  quadratic=None,
+                 cubic=None,
                  audit=None,
                  power_t=None,
                  adaptive=False,
@@ -42,6 +43,7 @@ class VW:
                  incremental=False,
                  mem=None,
                  nn=None,
+                 holdout_off=None,
                  **kwargs):
         assert moniker and passes
 
@@ -88,6 +90,7 @@ class VW:
         self.silent = silent
         self.passes = passes
         self.quadratic = quadratic
+        self.cubic = cubic
         self.power_t = power_t
         self.adaptive = adaptive
         self.decay_learning_rate = decay_learning_rate
@@ -102,6 +105,7 @@ class VW:
         self.bfgs = bfgs
         self.mem = mem
         self.nn = nn
+        self.holdout_off = holdout_off
 
         # Do some sanity checking for compatability between models
         if self.lda:
@@ -128,6 +132,7 @@ class VW:
         if self.l2                  is not None: l.append('--l2=%f' % self.l2)
         if self.initial_t           is not None: l.append('--initial_t=%f' % self.initial_t)
         if self.quadratic           is not None: l.append('-q %s' % self.quadratic)
+        if self.cubic               is not None: l.append('--cubic %s' % self.cubic)
         if self.power_t             is not None: l.append('--power_t=%f' % self.power_t)
         if self.loss                is not None: l.append('--loss_function=%s' % self.loss)
         if self.decay_learning_rate is not None: l.append('--decay_learning_rate=%f' % self.decay_learning_rate)
@@ -146,6 +151,7 @@ class VW:
         if self.bfgs:                            l.append('--bfgs')
         if self.adaptive:                        l.append('--adaptive')
         if self.nn                  is not None: l.append('--nn=%d' % self.nn)
+        if self.holdout_off         is not None: l.append('--holdout_off')
         return ' '.join(l)
 
     def vw_train_command(self, cache_file, model_file):
