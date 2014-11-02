@@ -126,6 +126,7 @@ class VW:
 
     def vw_base_command(self, base):
         l = base
+        if self.no_model            is     None: l.append('-f %s' % self.get_model_file())
         if self.bits                is not None: l.append('-b %d' % self.bits)
         if self.learning_rate       is not None: l.append('--learning_rate=%f' % self.learning_rate)
         if self.l1                  is not None: l.append('--l1=%f' % self.l1)
@@ -154,14 +155,14 @@ class VW:
         if self.holdout_off         is not None: l.append('--holdout_off')
         return ' '.join(l)
 
-    def vw_train_command(self, cache_file, model_file):
-        if os.path.exists(model_file) and self.incremental:
-            return self.vw_base_command([self.vw]) + ' --passes %d --cache_file %s -i %s -f %s' \
-                    % (self.passes, cache_file, model_file, model_file)
+    def vw_train_command(self, cache_file):
+        if os.path.exists(self.get_model_file()) and self.incremental:
+            return self.vw_base_command([self.vw]) + ' --passes %d --cache_file %s -i %s' \
+                    % (self.passes, cache_file, model_file)
         else:
             self.log.debug('No existing model file or not options.incremental')
-            return self.vw_base_command([self.vw]) + ' --passes %d --cache_file %s -f %s' \
-                    % (self.passes, cache_file, model_file)
+            return self.vw_base_command([self.vw]) + ' --passes %d --cache_file %s' \
+                    % (self.passes, cache_file)
 
     def vw_test_command(self, model_file, prediction_file):
         return self.vw_base_command([self.vw]) + ' -t -i %s -p %s' % (model_file, prediction_file)
@@ -197,7 +198,7 @@ class VW:
             safe_remove(model_file)
 
         # Run the actual training
-        self.vw_process = self.make_subprocess(self.vw_train_command(cache_file, model_file))
+        self.vw_process = self.make_subprocess(self.vw_train_command(cache_file))
 
         # set the instance pusher
         self.push_instance = self.push_instance_stdin
