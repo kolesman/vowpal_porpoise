@@ -44,6 +44,7 @@ class VW:
                  mem=None,
                  nn=None,
                  holdout_off=None,
+                 no_model=None,
                  **kwargs):
         assert moniker and passes
 
@@ -106,6 +107,7 @@ class VW:
         self.mem = mem
         self.nn = nn
         self.holdout_off = holdout_off
+        self.no_model = no_model
 
         # Do some sanity checking for compatability between models
         if self.lda:
