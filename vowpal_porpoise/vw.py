@@ -77,9 +77,6 @@ class VW:
             self.filename = old_model
             self.incremental = True
 
-        self.incremental = incremental
-        self.filename = '%s.model' % self.handle
-
         self.name = name
         self.bits = bits
         self.loss = loss
@@ -283,7 +280,10 @@ class VW:
         return open(self.current_stderr)
 
     def get_model_file(self):
-        return os.path.join(self.working_directory, self.filename)
+        if self.incremental:
+            return self.filename
+        else:
+            return os.path.join(self.working_directory, self.filename)
 
     def get_cache_file(self):
         return os.path.join(self.working_directory, '%s.cache' % (self.handle))
