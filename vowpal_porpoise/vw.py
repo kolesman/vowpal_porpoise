@@ -45,6 +45,12 @@ class VW:
                  nn=None,
                  holdout_off=None,
                  no_model=None,
+                 save_per_pass=None,
+                 rank=None,
+                 lrq=None,
+                 binary=None,
+                 lrqdropout=None,
+                 invert_hash=None,
                  **kwargs):
         assert moniker and passes
 
@@ -105,6 +111,12 @@ class VW:
         self.nn = nn
         self.holdout_off = holdout_off
         self.no_model = no_model
+        self.save_per_pass = save_per_pass
+        self.rank = rank
+        self.lrq = lrq
+        self.binary = binary
+        self.lrqdropout = lrqdropout
+        self.invert_hash = invert_hash
 
         # Do some sanity checking for compatability between models
         if self.lda:
@@ -128,8 +140,8 @@ class VW:
         if self.no_model            is     None: l.append('-f %s' % self.get_model_file())
         if self.bits                is not None: l.append('-b %d' % self.bits)
         if self.learning_rate       is not None: l.append('--learning_rate=%f' % self.learning_rate)
-        if self.l1                  is not None: l.append('--l1=%f' % self.l1)
-        if self.l2                  is not None: l.append('--l2=%f' % self.l2)
+        if self.l1                  is not None: l.append('--l1=%.9f' % self.l1)
+        if self.l2                  is not None: l.append('--l2=%.9f' % self.l2)
         if self.initial_t           is not None: l.append('--initial_t=%f' % self.initial_t)
         if self.quadratic           is not None: l.append('-q %s' % self.quadratic)
         if self.cubic               is not None: l.append('--cubic %s' % self.cubic)
@@ -152,6 +164,14 @@ class VW:
         if self.adaptive:                        l.append('--adaptive')
         if self.nn                  is not None: l.append('--nn=%d' % self.nn)
         if self.holdout_off         is not None: l.append('--holdout_off')
+        if self.save_per_pass       is not None: l.append('--save_per_pass')
+        if self.rank                is not None: l.append('--rank=%d' % self.rank)
+        if self.lrq                 is not None:
+            for x in self.lrq.split(','):
+                l.append('--lrq=%s' % x)
+        if self.binary              is not None: l.append('--binary')
+        if self.lrqdropout          is not None: l.append('--lrqdropout')
+        if self.invert_hash         is not None: l.append('--invert_hash=%s' % self.invert_hash)
         return ' '.join(l)
 
     def vw_train_command(self, cache_file):
